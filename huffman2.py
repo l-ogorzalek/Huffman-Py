@@ -32,6 +32,19 @@ def sift_up(heap, index):
         heap[index], heap[parent_index] = heap[parent_index], heap[index]
         sift_up(heap, parent_index)
 
+## usuwanie najmniejszych elementów z kopca
+
+def extract_min(heap):
+    if len(heap) == 0:
+        return None
+    
+    heap[0], heap[-1] = heap[-1], heap[0]
+    min_element = heap.pop()
+
+    heapify(heap, len(heap), 0)
+
+    return min_element
+
 ## Budowanie kopca
 
 def build_min_heap(arr):
@@ -63,18 +76,16 @@ def construct_priority_queue(data):
 
 def build_huffman_tree(min_heap):
     while len(min_heap) > 1:
-        node_x = min_heap.pop(0)  
-        heapify(min_heap, len(min_heap), 0)
+        node_x = extract_min(min_heap)  
 
-        node_y = min_heap.pop(0)
-        heapify(min_heap, len(min_heap), 0)
+        node_y = extract_min(min_heap)
 
         merged_node_z = Node(None, node_x.freq + node_y.freq)
         merged_node_z.left = node_x
         merged_node_z.right = node_y
 
         min_heap.append(merged_node_z)
-        sift_up(min_heap, len(min_heap) - 1) 
+        sift_up(min_heap, len(min_heap) - 1)
 
     return min_heap[0]
 
