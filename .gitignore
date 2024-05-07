@@ -1,0 +1,3 @@
+# Ignoruj foldery __pycache__ oraz pliki .pyc
+__pycache__/
+*.pyc
