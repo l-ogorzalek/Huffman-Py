@@ -1,3 +1,7 @@
+# ----------------------------------------------------------------------------------------------------------- #
+#---# Główne funkcje i klasa Node #---#
+# ----------------------------------------------------------------------------------------------------------- #
+
 ## Węzeł drzewa
 
 class Node:
@@ -32,7 +36,7 @@ def sift_up(heap, index):
         heap[index], heap[parent_index] = heap[parent_index], heap[index]
         sift_up(heap, parent_index)
 
-## usuwanie najmniejszych elementów z kopca
+## Usuwanie najmniejszych elementów z kopca
 
 def extract_min(heap):
     if len(heap) == 0:
@@ -89,6 +93,25 @@ def build_huffman_tree(min_heap):
 
     return min_heap[0]
 
+def rebuild_huffman_tree(huffman_codes):
+    root = Node(None, 0)
+
+    for char, code in huffman_codes.items():
+        current_node = root
+        for bit in code:
+            if bit == '0':
+                if not current_node.left:
+                    current_node.left = Node(None, 0)
+                current_node = current_node.left
+            else:
+                if not current_node.right:
+                    current_node.right = Node(None, 0)
+                current_node = current_node.right
+
+        current_node.char = char
+
+    return root
+
 ## Generowanie kodów
 
 def generate_huffman_codes(node, code="", code_dict=None):
@@ -104,46 +127,23 @@ def generate_huffman_codes(node, code="", code_dict=None):
 
     return code_dict
 
-## Test
-
-test_data = "this is an example for huffman encoding"
-
-print("Original text:", test_data)
-
-min_heap = construct_priority_queue(test_data)
-huffman_tree = build_huffman_tree(min_heap)
-
-huffman_codes = generate_huffman_codes(huffman_tree)
-print("Generated Huffman Codes:", huffman_codes)
+## Kodowanie i dekodowanie
 
 def encode(data, huffman_codes):
     encoded_data = ''.join(huffman_codes[char] for char in data)
     return encoded_data
 
-encoded_text = encode(test_data, huffman_codes)
-print("Encoded Text:", encoded_text)
-
 def decode(encoded_data, huffman_tree):
     current_node = huffman_tree
     decoded_output = ''
+
     for bit in encoded_data:
-        current_node = current_node.left if bit == '0' else current_node.right
+        if bit == '0':
+            current_node = current_node.left
+        else:
+            current_node = current_node.right
+
         if current_node.left is None and current_node.right is None:
             decoded_output += current_node.char
             current_node = huffman_tree
     return decoded_output
-
-decoded_text = decode(encoded_text, huffman_tree)
-print("Decoded Text:", decoded_text)
-
-print("Decoded text matches original:", decoded_text == test_data) 
-
-# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
-
-#---# OUTPUT #---#
-
-# Original text: this is an example for huffman encoding
-# Generated Huffman Codes: {'m': '0000', 'o': '0001', 'n': '001', 'h': '0100', 'c': '01010', 'x': '01011', 't': '01100', 'g': '01101', 'd': '01110', 'u': '01111', 'p': '10000', 'l': '10001', 'a': '1001', 'f': '1010', 'i': '1011', 'r': '11000', 's': '11001', 'e': '1101', ' ': '111'}
-# Encoded Text: 0110001001011110011111011110011111001001111110101011100100001000010001110111110100001110001110100011111010101000001001001111110100101010000101110101100101101
-# Decoded Text: this is an example for huffman encoding
-# Decoded text matches original: True
